@@ -2,9 +2,9 @@ name: Automate link
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run every hour (optional - remove if you only want manual triggers)
-    - cron: '0/15 * * * *'
+  # schedule:
+  #   # Run every hour
+  #   - cron: '0/15 * * * *'
 
 jobs:
   run-check:
