@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Run every hour (optional - remove if you only want manual triggers)
-    - cron: '0/30 * * * *'
+    - cron: '0/15 * * * *'
 
 jobs:
   run-check:
