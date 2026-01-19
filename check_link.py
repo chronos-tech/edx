@@ -169,8 +169,14 @@ def main():
     stored_canvaJoin = stored.get("latestJoin", None)
     teamName = stored.get("teamName", None)
     timestamp = get_bangkok_time_str()
-
-    if stored_url == extracted_url:
+    # get team name (profile)
+    contentScraper = scraper.get(extracted_url)
+    contentScraper.raise_for_status()
+    content = contentScraper.text
+    newJoinLink = submit_form(scraper, extracted_url, sessionToken)
+    newTeamName = content.split('<meta property="profile:username" content="')[1].split('"')[0]
+    # teamName = extract_name_from_url(extracted_url)
+    if teamName == newTeamName:
         message = (
             f"[{timestamp} BKK Time] 🔔 No change detected on the monitored page.\n"
             f"Current Team: {teamName or 'Undefined'}"
@@ -187,12 +193,10 @@ def main():
         )
     else:
         message = f"[{timestamp} BKK Time] 🚨 New link detected!\n"
-        joinLink = submit_form(scraper, extracted_url, sessionToken)
-        teamName = extract_name_from_url(extracted_url)
-        message += f"Team Name: {teamName}\n"
+        message += f"Team Name: {newTeamName}\n"
 
-        if joinLink:
-            message += f"Join link: {joinLink or 'None'}\nCheck it out!!"
+        if newJoinLink:
+            message += f"Join link: {newJoinLink or 'None'}\nCheck it out!!"
         else:
             message += "No join link found."
 
@@ -201,8 +205,8 @@ def main():
         # Save encrypted data to file
         new_data = {
             "latestUrl": extracted_url,
-            "latestJoin": joinLink,
-            "teamName": teamName,
+            "latestJoin": newJoinLink,
+            "teamName": newTeamName,
             "lastUpdate": timestamp_unix
         }
         save_stored_data(new_data)
@@ -215,7 +219,7 @@ def main():
                 "Title": "New Link Detected",
                 "Tags": "link,alert",
                 "priority": "5",
-                "Actions": f"view, {'Join ' + (teamName or 'Undefined') + ' team' if joinLink else 'check out new link!'}, {joinLink if joinLink else extracted_url};"
+                "Actions": f"view, {'Join ' + (newTeamName or 'Undefined') + ' team' if newJoinLink else 'check out new link!'}, {newJoinLink if newJoinLink else extracted_url};"
             }
         )
 
