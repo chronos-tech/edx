@@ -158,7 +158,7 @@ def main():
     sessionToken = generate_session_token()
 
     try:
-        extracted_url = html.split('<div class="su-button-center"><a href="')[1].split('"')[0]
+        extracted_url = html.split('<a id="tool" href="')[1].split('"')[0]
     except IndexError:
         raise RuntimeError("Expected content not found.")
 
